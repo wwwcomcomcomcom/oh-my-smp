@@ -1,0 +1,22 @@
+border:
+  world: world          # 보더를 적용할 월드(오버월드)
+  radius: 5000          # 반지름(블록). 월드 보더 크기는 지름이므로 내부에서 radius*2 사용
+  center-x: 0
+  center-z: 0
+
+death:
+  natural-drop-chance: 0.3   # 자연사 시 각 아이템 스택이 드롭될(손실될) 확률 (0.0~1.0)
+
+combat:
+  duration-seconds: 15       # 플레이어 피해를 입은 뒤 Combat이 유지되는 시간(초)
+
+respawn:
+  random-on-first-join: true # 첫 접속 시 랜덤 안전 위치에 스폰
+  max-attempts: 50           # 안전 위치 탐색 최대 시도 횟수
+
+dragon:
+  max-health: 1000.0
+  immune-explosion: true     # TNT/엔드크리스탈/침대 폭발 데미지 면역
+  immune-projectile: true    # 화살/삼지창 등 원거리 데미지 면역
+  regen-amount: 1.0          # regen-interval-ticks 마다 회복할 체력
+  regen-interval-ticks: 20   # 재생 주기(틱). 20틱 = 1초
