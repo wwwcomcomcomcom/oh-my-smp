@@ -1,0 +1,6 @@
+name: oh-my-smp
+version: '${version}'
+
+main: iieiiergn.ohMySmp.OhMySmp
+api-version: '26.2'
+load: POSTWORLD
