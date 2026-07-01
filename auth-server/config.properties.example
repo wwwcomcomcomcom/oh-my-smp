@@ -1,0 +1,19 @@
+# Copy to config.properties (git-ignored) and fill in, or supply via SMP_AUTH_* env vars.
+
+server.port=8080
+# Public URL players open in their browser; also the base for the OAuth redirect.
+server.publicBaseUrl=https://auth.example.kr
+# Must exactly match the redirect URI registered at https://www.datagsm.kr/clients
+oauth.redirectUri=https://auth.example.kr/callback
+
+# DataGSM client credentials (https://www.datagsm.kr/clients)
+datagsm.clientId=YOUR_CLIENT_ID
+datagsm.clientSecret=YOUR_CLIENT_SECRET
+datagsm.scope=self:read
+
+# Shared secret for server-to-server REST calls (lobby + velocity must use the same value)
+security.sharedSecret=CHANGE_ME_LONG_RANDOM_SECRET
+
+db.path=smp-auth.db
+key.ttlSeconds=300
+key.length=8

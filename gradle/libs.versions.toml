@@ -1,0 +1,38 @@
+[versions]
+java = "25"
+kotlin = "2.3.21"
+minestom = "26_2-SNAPSHOT"
+velocity = "3.4.0"
+paper = "26.2.build.40-alpha"
+ktor = "3.5.1"
+gson = "2.14.0"
+sqlite = "3.53.2.0"
+logback = "1.5.37"
+slf4j = "2.0.17"
+datagsm = "1.5.0"
+shadow = "9.4.3"
+run-paper = "3.0.2"
+
+[libraries]
+gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8" }
+minestom = { module = "net.minestom:minestom", version.ref = "minestom" }
+velocity-api = { module = "com.velocitypowered:velocity-api", version.ref = "velocity" }
+paper-api = { module = "io.papermc.paper:paper-api", version.ref = "paper" }
+sqlite-jdbc = { module = "org.xerial:sqlite-jdbc", version.ref = "sqlite" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+datagsm-sdk = { module = "com.github.themoment-team:datagsm-oauth-sdk-java", version.ref = "datagsm" }
+
+ktor-server-core = { module = "io.ktor:ktor-server-core", version.ref = "ktor" }
+ktor-server-netty = { module = "io.ktor:ktor-server-netty", version.ref = "ktor" }
+ktor-server-content-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-serialization-gson = { module = "io.ktor:ktor-serialization-gson", version.ref = "ktor" }
+ktor-server-status-pages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
+ktor-server-call-logging = { module = "io.ktor:ktor-server-call-logging", version.ref = "ktor" }
+ktor-server-config-yaml = { module = "io.ktor:ktor-server-config-yaml", version.ref = "ktor" }
+
+[plugins]
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+shadow = { id = "com.gradleup.shadow", version.ref = "shadow" }
+run-paper = { id = "xyz.jpenilla.run-paper", version.ref = "run-paper" }

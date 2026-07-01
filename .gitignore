@@ -19,3 +19,15 @@ hs_err_pid*
 
 # Common working directory
 run
+_workspace
+
+# Local secrets — never commit real credentials (auth stack)
+**/application.local.conf
+**/*.local.properties
+**/config.local.*
+secrets.env
+
+# SQLite auth DB
+*.db
+*.db-journal
+*.sqlite

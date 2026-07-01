@@ -1,0 +1,6 @@
+name: SmpAuth
+version: 1.0.0
+main: iieiiergn.smpAuth.paperlib.SmpAuthPlugin
+api-version: '1.21'
+author: smp
+description: Provides DataGSM auth data to content servers via Velocity plugin messaging.

@@ -1,0 +1,12 @@
+name: SmpSample
+version: 1.0.0
+main: iieiiergn.smpAuth.sample.SamplePlugin
+api-version: '1.21'
+author: smp
+description: Example content-server plugin consuming SmpAuth.
+depend: [SmpAuth]
+commands:
+  whoami:
+    description: Show your DataGSM student info.
+  seniors:
+    description: Grade-3 only area (gating example).

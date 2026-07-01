@@ -1,43 +1,15 @@
-plugins {
-    kotlin("jvm") version "2.4.0"
-    id("com.gradleup.shadow") version "9.4.3"
-    id("xyz.jpenilla.run-paper") version "3.0.2"
-}
+// Root project — no code. Shared conventions live in each module's build script.
+// All modules target the Java 25 toolchain (see gradle/libs.versions.toml).
+//
+// Modules:
+//   common / auth-server / velocity-plugin / lobby-server / content-lib / sample-content-plugin
+//     — the SmpAuth (smp-robby) auth stack.
+//   smp-server — the oh-my-smp Paper content plugin; depends on :content-lib.
 
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
-}
-
-dependencies {
-    compileOnly("io.papermc.paper:paper-api:26.2.build.+")
-    // SmpAuth(content-lib) 컨텐츠 API. 런타임엔 SmpAuth 플러그인이 제공하므로 컴파일 전용(shade 금지).
-    // libs/content-lib.jar 는 smp-robby GitHub Release(v0.1.1)의 산출물.
-    compileOnly(files("libs/content-lib.jar"))
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-}
-
-kotlin {
-    jvmToolchain(25)
-}
-
-tasks {
-    build {
-        dependsOn(shadowJar)
-    }
-
-    runServer {
-        // Configure the Minecraft version for our task.
-        // This is the only required configuration besides applying the plugin.
-        // Your plugin's jar (or shadowJar if present) will be used automatically.
-        minecraftVersion("26.2")
-        jvmArgs("-Xms2G", "-Xmx2G")
-    }
-
-    processResources {
-        val props = mapOf("version" to version)
-        filesMatching("plugin.yml") {
-            expand(props)
-        }
+tasks.register("printModules") {
+    group = "help"
+    description = "Lists the modules in this multi-module build."
+    doLast {
+        subprojects.forEach { println("• ${it.name}") }
     }
 }
