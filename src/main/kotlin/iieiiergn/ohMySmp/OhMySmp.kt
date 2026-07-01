@@ -9,12 +9,16 @@ import iieiiergn.ohMySmp.dragon.DragonListener
 import iieiiergn.ohMySmp.dragon.DragonManager
 import iieiiergn.ohMySmp.listener.DeathListener
 import iieiiergn.ohMySmp.listener.RespawnListener
+import iieiiergn.ohMySmp.nametag.NametagListener
+import iieiiergn.ohMySmp.nametag.NametagManager
+import iieiiergn.ohMySmp.nametag.StudentInfoCommand
 import org.bukkit.plugin.java.JavaPlugin
 
 class OhMySmp : JavaPlugin() {
 
     private lateinit var dragonManager: DragonManager
     private lateinit var combatDisplay: CombatDisplay
+    private var nametagManager: NametagManager? = null
 
     override fun onEnable() {
         saveDefaultConfig()
@@ -42,6 +46,22 @@ class OhMySmp : JavaPlugin() {
         pm.registerEvents(RespawnListener(this, pluginConfig), this)
         pm.registerEvents(DragonListener(pluginConfig, dragonManager), this)
 
+        // 6. SmpAuth 연동: 학생 이름표 + /student-info (SmpAuth 플러그인이 있을 때만)
+        if (pm.getPlugin("SmpAuth") != null) {
+            if (pluginConfig.nametagEnabled) {
+                val manager = NametagManager()
+                nametagManager = manager
+                pm.registerEvents(NametagListener(manager), this)
+            }
+            getCommand("student-info")?.let {
+                val executor = StudentInfoCommand()
+                it.setExecutor(executor)
+                it.tabCompleter = executor
+            }
+        } else {
+            logger.warning("SmpAuth 플러그인이 없어 학생 이름표/명령어 기능을 건너뜁니다.")
+        }
+
         logger.info("oh-my-smp 활성화 완료.")
     }
 
@@ -52,5 +72,6 @@ class OhMySmp : JavaPlugin() {
         if (::combatDisplay.isInitialized) {
             combatDisplay.stop()
         }
+        nametagManager?.clearAll()
     }
 }

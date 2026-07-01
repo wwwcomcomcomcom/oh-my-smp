@@ -24,6 +24,9 @@ class PluginConfig(config: FileConfiguration) {
     val randomOnFirstJoin: Boolean = config.getBoolean("respawn.random-on-first-join", true)
     val respawnMaxAttempts: Int = config.getInt("respawn.max-attempts", 50)
 
+    // nametag (SmpAuth 학번 이름표)
+    val nametagEnabled: Boolean = config.getBoolean("nametag.enabled", true)
+
     // dragon
     val dragonMaxHealth: Double = config.getDouble("dragon.max-health", 1000.0)
     val dragonImmuneExplosion: Boolean = config.getBoolean("dragon.immune-explosion", true)

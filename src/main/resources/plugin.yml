@@ -4,3 +4,13 @@ version: '${version}'
 main: iieiiergn.ohMySmp.OhMySmp
 api-version: '26.2'
 load: POSTWORLD
+
+# 학번 이름표/명령어 기능은 SmpAuth 플러그인의 인증 데이터를 사용한다.
+# soft 의존이라 SmpAuth 가 없어도 플러그인은 로드되며(다른 기능 정상 동작),
+# 해당 기능만 비활성화된다. 존재 시 로드 순서가 SmpAuth 뒤로 보장된다.
+softdepend: [SmpAuth]
+
+commands:
+  student-info:
+    description: 대상 온라인 플레이어의 학생 정보를 표시합니다.
+    usage: /student-info <플레이어>

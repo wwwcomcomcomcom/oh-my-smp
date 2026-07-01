@@ -14,6 +14,9 @@ respawn:
   random-on-first-join: true # 첫 접속 시 랜덤 안전 위치에 스폰
   max-attempts: 50           # 안전 위치 탐색 최대 시도 횟수
 
+nametag:
+  enabled: true              # SmpAuth 인증 데이터의 "학번 이름"을 머리 위 이름표에 표시(SmpAuth 플러그인 필요)
+
 dragon:
   max-health: 1000.0
   immune-explosion: true     # TNT/엔드크리스탈/침대 폭발 데미지 면역
