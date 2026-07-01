@@ -11,6 +11,9 @@ repositories {
 
 dependencies {
     compileOnly("io.papermc.paper:paper-api:26.2.build.+")
+    // SmpAuth(content-lib) 컨텐츠 API. 런타임엔 SmpAuth 플러그인이 제공하므로 컴파일 전용(shade 금지).
+    // libs/content-lib.jar 는 smp-robby GitHub Release(v0.1.1)의 산출물.
+    compileOnly(files("libs/content-lib.jar"))
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
 }
 
