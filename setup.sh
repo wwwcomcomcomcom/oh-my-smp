@@ -312,9 +312,11 @@ fi
 
 start() { # name script
   local name="$1" script="$2" session="${PREFIX}-${1}"
-  tmux new-session -d -s "$session" -c "$DIR"
+  # Run the script as the pane's own command (not typed into a persistent shell)
+  # so the pane/session exits the instant the process does — otherwise stop-all.sh
+  # can never observe a graceful shutdown and always falls back to a forced kill.
+  tmux new-session -d -s "$session" -c "$DIR" "bash '$DIR/${script}'"
   tmux pipe-pane -o -t "$session" "cat >> '$DIR/logs/${name}.log'"
-  tmux send-keys -t "$session" "bash '$DIR/${script}'" C-m
   log "started $name -> tmux attach -t $session  (logs/${name}.log)"
 }
 
