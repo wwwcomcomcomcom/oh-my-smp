@@ -1,10 +1,13 @@
 package iieiiergn.smpAuth.lobby;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.Auth;
 import net.minestom.server.MinecraftServer;
 import net.minestom.server.coordinate.Pos;
 import net.minestom.server.event.GlobalEventHandler;
 import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
+import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
 import org.slf4j.Logger;
@@ -36,10 +39,17 @@ public final class Main {
             event.setSpawningInstance(instance);
             event.getPlayer().setRespawnPoint(new Pos(0.5, 41, 0.5));
         });
+        events.addListener(PlayerSpawnEvent.class, event -> {
+            if (!event.isFirstSpawn()) return;
+            event.getPlayer().sendMessage(Component.text(
+                    "인증하려면 /login, 명령어와 서버 규칙 안내는 /guide 를 입력하세요.",
+                    NamedTextColor.YELLOW));
+        });
 
         AuthClient authClient = new AuthClient(config.authServerBaseUrl, config.sharedSecret);
         MinecraftServer.getCommandManager().register(new LoginCommand(config));
         MinecraftServer.getCommandManager().register(new VerifyCommand(authClient));
+        MinecraftServer.getCommandManager().register(new GuideCommand(config));
 
         server.start(config.host, config.port);
         LOGGER.info("Lobby started on {}:{}", config.host, config.port);
