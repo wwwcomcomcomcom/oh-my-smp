@@ -23,3 +23,6 @@ dragon:
   immune-projectile: true    # 화살/삼지창 등 원거리 데미지 면역
   regen-amount: 1.0          # regen-interval-ticks 마다 회복할 체력
   regen-interval-ticks: 20   # 재생 주기(틱). 20틱 = 1초
+
+guide:
+  broadcast-interval-minutes: 10   # /guide 사용을 상기시키는 전체 브로드캐스트 주기(분)

@@ -7,6 +7,8 @@ import iieiiergn.ohMySmp.combat.CombatManager
 import iieiiergn.ohMySmp.config.PluginConfig
 import iieiiergn.ohMySmp.dragon.DragonListener
 import iieiiergn.ohMySmp.dragon.DragonManager
+import iieiiergn.ohMySmp.guide.GuideBroadcaster
+import iieiiergn.ohMySmp.guide.GuideCommand
 import iieiiergn.ohMySmp.listener.DeathListener
 import iieiiergn.ohMySmp.listener.RespawnListener
 import iieiiergn.ohMySmp.nametag.NametagListener
@@ -18,6 +20,7 @@ class OhMySmp : JavaPlugin() {
 
     private lateinit var dragonManager: DragonManager
     private lateinit var combatDisplay: CombatDisplay
+    private lateinit var guideBroadcaster: GuideBroadcaster
     private var nametagManager: NametagManager? = null
 
     override fun onEnable() {
@@ -62,6 +65,11 @@ class OhMySmp : JavaPlugin() {
             logger.warning("SmpAuth 플러그인이 없어 학생 이름표/명령어 기능을 건너뜁니다.")
         }
 
+        // 7. 서버 규칙 안내서
+        getCommand("guide")?.setExecutor(GuideCommand(pluginConfig, nametagManager != null))
+        guideBroadcaster = GuideBroadcaster(this, pluginConfig)
+        guideBroadcaster.start()
+
         logger.info("oh-my-smp 활성화 완료.")
     }
 
@@ -71,6 +79,9 @@ class OhMySmp : JavaPlugin() {
         }
         if (::combatDisplay.isInitialized) {
             combatDisplay.stop()
+        }
+        if (::guideBroadcaster.isInitialized) {
+            guideBroadcaster.stop()
         }
         nametagManager?.clearAll()
     }

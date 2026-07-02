@@ -14,3 +14,7 @@ commands:
   student-info:
     description: 대상 온라인 플레이어의 학생 정보를 표시합니다.
     usage: /student-info <플레이어>
+  guide:
+    description: 현재 config.yml 기준 서버 규칙 안내서를 펼칩니다.
+    usage: /guide
+    aliases: [rules]

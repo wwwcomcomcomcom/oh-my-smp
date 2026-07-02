@@ -33,4 +33,7 @@ class PluginConfig(config: FileConfiguration) {
     val dragonImmuneProjectile: Boolean = config.getBoolean("dragon.immune-projectile", true)
     val dragonRegenAmount: Double = config.getDouble("dragon.regen-amount", 1.0)
     val dragonRegenIntervalTicks: Long = config.getLong("dragon.regen-interval-ticks", 20L)
+
+    // guide
+    val guideBroadcastIntervalMinutes: Long = config.getLong("guide.broadcast-interval-minutes", 10L)
 }
