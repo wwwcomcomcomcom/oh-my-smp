@@ -8,8 +8,12 @@
 #
 #   mkdir ~/smp-test && cd ~/smp-test
 #   /path/to/repo/setup.sh          # builds jars, downloads Velocity + Paper, writes configs
-#   ./start-all.sh                  # launch auth + lobby + velocity + paper
+#   ./start-all.sh                  # launch auth + lobby + velocity + paper (each in a tmux session)
+#   ./console.sh {auth|lobby|velocity|paper}   # attach to a server's console (detach: Ctrl-B, D)
 #   ./stop-all.sh                   # stop them
+#
+# Requires tmux (each process runs in its own detached session, so start-all.sh
+# returns immediately but you can still attach and type console commands).
 #
 # Ports default to velocity=25565 lobby=25566 paper=25567 auth=8080; override with
 # --velocity-port / --lobby-port / --paper-port / --auth-port (see --help).
@@ -26,7 +30,6 @@ PROJECT_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 RUN_DIR="$PWD"
 JARS_DIR="$RUN_DIR/jars"
 LOG_DIR="$RUN_DIR/logs"
-PID_DIR="$RUN_DIR/pids"
 
 log() { printf "\033[1;36m[setup]\033[0m %s\n" "$*"; }
 
@@ -99,7 +102,7 @@ PUBLIC_BASE_URL="http://127.0.0.1:${AUTH_PORT}"
 mkdir -p "$JARS_DIR" "$RUN_DIR"/auth "$RUN_DIR"/lobby \
          "$RUN_DIR"/velocity/plugins/smp-auth \
          "$RUN_DIR"/paper/plugins "$RUN_DIR"/paper/config \
-         "$LOG_DIR" "$PID_DIR"
+         "$LOG_DIR"
 
 # ---------------------------------------------------------------- 1. build
 log "Building project jars (shadow)…"
@@ -287,18 +290,25 @@ EOF
 
 cat > "$RUN_DIR/start-all.sh" <<'EOF'
 #!/usr/bin/env bash
-# Launch auth + lobby + velocity + paper in the background. Logs in logs/, PIDs in pids/.
+# Launch auth + lobby + velocity + paper, each in its own tmux session so you
+# can attach and use the server console. Output is also mirrored to logs/.
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 log() { printf "\033[1;32m[start]\033[0m %s\n" "$*"; }
+PREFIX="smp"
 
+if ! command -v tmux >/dev/null 2>&1; then
+  echo "tmux is required for consoled server management (brew install tmux)." >&2; exit 1
+fi
 if [ ! -f "$DIR/jars/velocity.jar" ] || [ ! -f "$DIR/jars/paper.jar" ]; then
   echo "velocity.jar / paper.jar missing — run ./setup.sh first." >&2; exit 1
 fi
 
 start() { # name script
-  nohup bash "$DIR/$2" > "$DIR/logs/$1.log" 2>&1 &
-  echo $! > "$DIR/pids/$1.pid"
-  log "started $1 (pid $!) -> logs/$1.log"
+  local name="$1" script="$2" session="${PREFIX}-${1}"
+  tmux new-session -d -s "$session" -c "$DIR"
+  tmux pipe-pane -o -t "$session" "cat >> '$DIR/logs/${name}.log'"
+  tmux send-keys -t "$session" "bash '$DIR/${script}'" C-m
+  log "started $name -> tmux attach -t $session  (logs/${name}.log)"
 }
 
 start auth     start-auth.sh
@@ -311,28 +321,55 @@ start velocity start-velocity.sh
 
 cat <<MSG
 
-All four processes launched.
+All four processes launched, each in its own tmux session.
   • Connect a Minecraft 26.2 client to  127.0.0.1:25565
   • In the lobby:  /login  → open the URL → DataGSM → /verify <key>
   • Then hop to the content server:  /server content   (oh-my-smp gameplay)
 
-Tail logs:   tail -f logs/{auth,lobby,velocity,paper}.log
-Stop all:    ./stop-all.sh
+Console access:   ./console.sh {auth|lobby|velocity|paper}   (detach: Ctrl-B then D)
+Tail logs:        tail -f logs/{auth,lobby,velocity,paper}.log
+Stop all:         ./stop-all.sh
 MSG
+EOF
+
+cat > "$RUN_DIR/console.sh" <<'EOF'
+#!/usr/bin/env bash
+# Attach to a running server's console (interactive — type commands directly).
+# Detach without stopping the server: Ctrl-B then D.
+if [ $# -ne 1 ] || [[ ! "$1" =~ ^(auth|lobby|velocity|paper)$ ]]; then
+  echo "Usage: $0 {auth|lobby|velocity|paper}" >&2
+  exit 1
+fi
+exec tmux attach -t "smp-$1"
 EOF
 
 cat > "$RUN_DIR/stop-all.sh" <<'EOF'
 #!/usr/bin/env bash
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-for pidfile in "$DIR"/pids/*.pid; do
-  [ -e "$pidfile" ] || continue
-  name="$(basename "$pidfile" .pid)"; pid="$(cat "$pidfile")"
-  if kill -0 "$pid" 2>/dev/null; then
-    kill -TERM "$pid" 2>/dev/null || true
-    printf "\033[1;33m[stop]\033[0m %s (pid %s)\n" "$name" "$pid"
+PREFIX="smp"
+
+stop() { # name [console-command]
+  local name="$1" cmd="${2:-}" session="${PREFIX}-${1}"
+  tmux has-session -t "$session" 2>/dev/null || return 0
+  if [ -n "$cmd" ]; then
+    tmux send-keys -t "$session" "$cmd" C-m
+  else
+    tmux send-keys -t "$session" C-c
   fi
-  rm -f "$pidfile"
-done
+  for i in $(seq 1 20); do
+    tmux has-session -t "$session" 2>/dev/null || { printf "\033[1;33m[stop]\033[0m %s\n" "$name"; return 0; }
+    sleep 1
+  done
+  tmux kill-session -t "$session" 2>/dev/null || true
+  printf "\033[1;33m[stop]\033[0m %s (forced)\n" "$name"
+}
+
+# Reverse of start order; graceful console commands where the server has one.
+stop velocity shutdown
+stop paper stop
+stop lobby
+stop auth
+
 # Belt-and-suspenders: kill any stragglers by jar name.
 pkill -f 'auth-server-all.jar' 2>/dev/null || true
 pkill -f 'lobby-server-all.jar' 2>/dev/null || true
@@ -341,8 +378,8 @@ pkill -f 'jars/paper.jar' 2>/dev/null || true
 echo "stopped."
 EOF
 
-chmod +x "$RUN_DIR"/start-all.sh "$RUN_DIR"/stop-all.sh \
+chmod +x "$RUN_DIR"/start-all.sh "$RUN_DIR"/stop-all.sh "$RUN_DIR"/console.sh \
          "$RUN_DIR"/start-auth.sh "$RUN_DIR"/start-lobby.sh \
          "$RUN_DIR"/start-velocity.sh "$RUN_DIR"/start-paper.sh
 
-log "Done. Run ./start-all.sh to launch auth+lobby+velocity+paper, ./stop-all.sh to stop."
+log "Done. Run ./start-all.sh to launch auth+lobby+velocity+paper, ./console.sh <name> for a console, ./stop-all.sh to stop."

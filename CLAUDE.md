@@ -36,11 +36,12 @@ Everything targets the **Java 25 toolchain**; versions are centralized in `gradl
 ```
 mkdir ~/smp-test && cd ~/smp-test
 /path/to/oh-my-smp/setup.sh   # builds jars, downloads Velocity + Paper, writes configs, patches Paper forwarding
-./start-all.sh                # launch all four; connect a 26.2 client to 127.0.0.1:25565
+./start-all.sh                # launch all four (each in its own tmux session); connect a 26.2 client to 127.0.0.1:25565
+./console.sh {auth|lobby|velocity|paper}   # attach to a server's console to run admin commands (detach: Ctrl-B, D)
 ./stop-all.sh
 ```
 
-It refuses to run inside the repo root (to avoid littering the source tree). Ports: Velocity 25565, lobby 25566, Paper 25567, auth 8080. Override secrets by dropping a `secrets.env` next to where you run it.
+It refuses to run inside the repo root (to avoid littering the source tree). Ports: Velocity 25565, lobby 25566, Paper 25567, auth 8080. Override secrets by dropping a `secrets.env` next to where you run it. Requires `tmux` (`brew install tmux`) for console access.
 
 ## Architecture (smp-server / oh-my-smp)
 
