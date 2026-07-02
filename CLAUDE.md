@@ -43,6 +43,8 @@ mkdir ~/smp-test && cd ~/smp-test
 
 It refuses to run inside the repo root (to avoid littering the source tree). Ports: Velocity 25565, lobby 25566, Paper 25567, auth 8080. Override secrets by dropping a `secrets.env` next to where you run it. Requires `tmux` (`brew install tmux`) for console access.
 
+After code changes, run `/path/to/oh-my-smp/update.sh` from the same scratch directory to rebuild and swap in **only the jars** (configs, the auth SQLite db, and Paper worlds are untouched) — no need to rerun `setup.sh`. Pass `--restart` to also bounce the whole stack; otherwise restart manually (`./stop-all.sh && ./start-all.sh`) since running servers keep their loaded classes.
+
 ## Architecture (smp-server / oh-my-smp)
 
 Each feature lives in its own package under `smp-server/src/main/kotlin/iieiiergn/ohMySmp/` and is wired together in `OhMySmp.onEnable()`:

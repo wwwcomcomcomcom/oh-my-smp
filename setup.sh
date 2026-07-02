@@ -12,6 +12,9 @@
 #   ./console.sh {auth|lobby|velocity|paper}   # attach to a server's console (detach: Ctrl-B, D)
 #   ./stop-all.sh                   # stop them
 #
+# After changing code, run /path/to/repo/update.sh from the same directory to
+# rebuild and swap in just the jars (configs/db/worlds untouched).
+#
 # Requires tmux (each process runs in its own detached session, so start-all.sh
 # returns immediately but you can still attach and type console commands).
 #
@@ -214,8 +217,12 @@ enable-command-block=false
 allow-nether=false
 EOF
 
-# ---------------------------------------------------------------- 4. plugin jars
-log "Copying plugin jars…"
+# ---------------------------------------------------------------- 4. project jars
+# Copied to stable (version-less) names so start scripts and update.sh never
+# depend on the repo's current version string.
+log "Copying project jars…"
+cp -f "$AUTH_JAR"            "$JARS_DIR/auth-server-all.jar"
+cp -f "$LOBBY_JAR"           "$JARS_DIR/lobby-server-all.jar"
 cp -f "$VELOCITY_PLUGIN_JAR" "$RUN_DIR/velocity/plugins/velocity-plugin.jar"
 cp -f "$SMPAUTH_JAR"         "$RUN_DIR/paper/plugins/SmpAuth.jar"
 cp -f "$OHMYSMP_JAR"         "$RUN_DIR/paper/plugins/oh-my-smp.jar"
@@ -267,13 +274,13 @@ log "Emitting start/stop scripts…"
 cat > "$RUN_DIR/start-auth.sh" <<EOF
 #!/usr/bin/env bash
 cd "\$(dirname "\${BASH_SOURCE[0]}")/auth"
-exec "$JAVA" -jar "$AUTH_JAR"
+exec "$JAVA" -jar "$JARS_DIR/auth-server-all.jar"
 EOF
 
 cat > "$RUN_DIR/start-lobby.sh" <<EOF
 #!/usr/bin/env bash
 cd "\$(dirname "\${BASH_SOURCE[0]}")/lobby"
-exec "$JAVA" -jar "$LOBBY_JAR"
+exec "$JAVA" -jar "$JARS_DIR/lobby-server-all.jar"
 EOF
 
 cat > "$RUN_DIR/start-velocity.sh" <<EOF
