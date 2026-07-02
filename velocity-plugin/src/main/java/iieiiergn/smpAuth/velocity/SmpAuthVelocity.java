@@ -105,9 +105,24 @@ public final class SmpAuthVelocity {
                 if (student != null) {
                     state.put(player.getUniqueId(), student);
                     logger.info("Reloaded link for {} after /verify", player.getUsername());
+                    sendToContentServer(player);
                 }
             });
             default -> { /* AUTH_RESPONSE is proxy→backend only; ignore inbound */ }
         }
+    }
+
+    /** Auto-connects a freshly-verified player from the lobby to the content server. */
+    private void sendToContentServer(Player player) {
+        proxy.getServer(config.contentServerName).ifPresentOrElse(
+                server -> player.createConnectionRequest(server).connect().thenAccept(result -> {
+                    if (!result.isSuccessful()) {
+                        logger.warn("Failed to auto-connect {} to {}: {}",
+                                player.getUsername(), config.contentServerName, result.getReasonComponent().orElse(null));
+                    }
+                }),
+                () -> logger.warn("contentServerName '{}' is not a registered server; cannot auto-connect {}",
+                        config.contentServerName, player.getUsername())
+        );
     }
 }

@@ -16,13 +16,17 @@ public final class VelocityConfig {
     public final String authServerBaseUrl;
     public final String sharedSecret;
     public final String lobbyServerName;
+    /** Server a player is auto-connected to right after a successful /verify. */
+    public final String contentServerName;
     /** Explicit gated servers; empty means "every server except the lobby is gated". */
     private final Set<String> gatedServers;
 
-    private VelocityConfig(String authServerBaseUrl, String sharedSecret, String lobbyServerName, Set<String> gated) {
+    private VelocityConfig(String authServerBaseUrl, String sharedSecret, String lobbyServerName,
+            String contentServerName, Set<String> gated) {
         this.authServerBaseUrl = authServerBaseUrl;
         this.sharedSecret = sharedSecret;
         this.lobbyServerName = lobbyServerName;
+        this.contentServerName = contentServerName;
         this.gatedServers = gated;
     }
 
@@ -44,6 +48,7 @@ public final class VelocityConfig {
             props.setProperty("authServerBaseUrl", "http://localhost:8080");
             props.setProperty("sharedSecret", "CHANGE_ME_LONG_RANDOM_SECRET");
             props.setProperty("lobbyServerName", "lobby");
+            props.setProperty("contentServerName", "content");
             props.setProperty("gatedServers", "");
             try (OutputStream out = Files.newOutputStream(file)) {
                 props.store(out, "SMP Auth — Velocity config. gatedServers: comma-separated; empty = all non-lobby servers gated.");
@@ -59,6 +64,7 @@ public final class VelocityConfig {
                 props.getProperty("authServerBaseUrl", "http://localhost:8080"),
                 props.getProperty("sharedSecret", ""),
                 props.getProperty("lobbyServerName", "lobby"),
+                props.getProperty("contentServerName", "content"),
                 gated
         );
     }
@@ -67,6 +73,7 @@ public final class VelocityConfig {
     public String toString() {
         return "VelocityConfig{authServerBaseUrl=" + authServerBaseUrl
                 + ", lobbyServerName=" + lobbyServerName
+                + ", contentServerName=" + contentServerName
                 + ", gatedServers=" + (gatedServers.isEmpty() ? "<all non-lobby>" : gatedServers) + "}";
     }
 }

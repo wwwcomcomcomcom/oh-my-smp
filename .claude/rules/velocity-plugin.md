@@ -35,6 +35,11 @@ paths:
 새 `MessageType`을 처리할 때도 이 두 검사 **다음에** 분기한다. `AUTH_RESPONSE`는
 프록시→백엔드 전용이므로 인바운드로 오면 무시(현행 default 분기 유지).
 
+`LINK_UPDATED` 처리 시 링크 재조회(`fetchLink`)가 성공하면 `sendToContentServer()`로
+`contentServerName`(기본 `"content"`) 서버에 자동 접속시킨다 — lobby-server의 `/verify` 성공 직후
+플레이어가 수동으로 `/server content`를 칠 필요가 없게 하기 위함. 대상 서버가
+`ProxyServer.getServer()`에 없으면(오타·미등록) 조용히 실패하지 않고 warn 로그를 남긴다.
+
 ## 빌드
 
 - 배포 jar는 classifier 없는 **shadow jar**(`velocity-plugin.jar`), 일반 jar는 `-thin`.
