@@ -16,7 +16,7 @@ final class GuideBook {
 
     static Book build(LobbyConfig config) {
         return Book.book(
-                Component.text("오미숲 안내서"),
+                Component.text("oh-my-smp 가이드"),
                 Component.text("oh-my-smp"),
                 List.of(loginPage(config), rulesPageOne(), rulesPageTwo())
         );
@@ -52,16 +52,16 @@ final class GuideBook {
                 .append(Component.text("중심 (0, 0)에서 반경 5000블록까지만 이동할 수 있습니다.",
                         NamedTextColor.BLACK))
                 .append(Component.newline()).append(Component.newline())
-                .append(Component.text("전투 태그", NamedTextColor.DARK_RED, TextDecoration.BOLD))
+                .append(Component.text("전투 상태", NamedTextColor.DARK_RED, TextDecoration.BOLD))
                 .append(Component.newline())
-                .append(Component.text("피해를 입으면 15초간 전투 상태가 되며, 이 동안 로그아웃하면 " +
-                                "다음 접속 시 위치를 보장받지 못할 수 있습니다.",
+                .append(Component.text("플레이어에게 피해를 입으면 전투 상태가 되며, 이 동안 로그아웃하면 " +
+                                "사망 처리됩니다. 15초간 피해를 입지 않으면 전투 상태가 해제됩니다.",
                         NamedTextColor.BLACK))
                 .append(Component.newline()).append(Component.newline())
-                .append(Component.text("자연사 드롭", NamedTextColor.DARK_RED, TextDecoration.BOLD))
+                .append(Component.text("인벤세이브", NamedTextColor.DARK_RED, TextDecoration.BOLD))
                 .append(Component.newline())
-                .append(Component.text("전투가 아닌 사망(추락, 익사 등) 시 인벤토리의 각 아이템 스택이 " +
-                                "30% 확률로 사라집니다.",
+                .append(Component.text("전투가 아닌 사망(추락, 익사 등) 시 모든 인벤토리를 잃는 대신," +
+                                "각 아이템이 30% 확률로 드랍됩니다.",
                         NamedTextColor.BLACK))
                 .build();
     }
@@ -72,13 +72,15 @@ final class GuideBook {
                 .append(Component.newline()).append(Component.newline())
                 .append(Component.text("엔더 드래곤", NamedTextColor.DARK_RED, TextDecoration.BOLD))
                 .append(Component.newline())
-                .append(Component.text("체력 1000, 폭발·원거리 공격에 면역이며 매초 서서히 체력을 " +
-                                "회복합니다. 정면 승부를 준비하세요.",
+                .append(Component.text("엔더 드래곤의 죽음은 SMP 서버의 꽃이자 재앙입니다. 게임의 진행 속도를 조절하기 위해 아래와 같은 조정이 적용됩니다.",
+                        NamedTextColor.BLACK))
+                .append(Component.newline())
+                .append(Component.text("체력 1000으로 증가됩니다.\n폭발·원거리 공격에 면역이며 매초 서서히 체력을 회복합니다. 정면 승부를 준비하세요.",
                         NamedTextColor.BLACK))
                 .append(Component.newline()).append(Component.newline())
                 .append(Component.text("이름표", NamedTextColor.DARK_RED, TextDecoration.BOLD))
                 .append(Component.newline())
-                .append(Component.text("인증된 플레이어는 머리 위에 학번과 이름이 표시됩니다. " +
+                .append(Component.text("DataGSM으로 인증된 플레이어는 머리 위에 이름이 표시됩니다. " +
                                 "/student-info 명령어로 다른 플레이어의 정보를 확인할 수 있습니다.",
                         NamedTextColor.BLACK))
                 .append(Component.newline()).append(Component.newline())
