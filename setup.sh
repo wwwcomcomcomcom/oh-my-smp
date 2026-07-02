@@ -11,6 +11,9 @@
 #   ./start-all.sh                  # launch auth + lobby + velocity + paper
 #   ./stop-all.sh                   # stop them
 #
+# Ports default to velocity=25565 lobby=25566 paper=25567 auth=8080; override with
+# --velocity-port / --lobby-port / --paper-port / --auth-port (see --help).
+#
 # Steps: 1. build jars  2. download Velocity + Paper  3. write configs
 #        4. copy plugin jars  5. generate + patch Paper's velocity forwarding
 #        6. emit start/stop scripts
@@ -27,6 +30,46 @@ PID_DIR="$RUN_DIR/pids"
 
 log() { printf "\033[1;36m[setup]\033[0m %s\n" "$*"; }
 
+# ---------------------------------------------------------------- ports (overridable via CLI flags)
+VELOCITY_PORT=25565   # players connect here
+LOBBY_PORT=25566      # Minestom lobby (Velocity server "lobby")
+PAPER_PORT=25567      # Paper content server (Velocity server "content")
+AUTH_PORT=8080        # auth web server
+
+usage() {
+  cat <<USAGE
+Usage: $0 [options]
+
+Optional port overrides (defaults shown):
+  --velocity-port PORT   Velocity proxy port, what players connect to (default: $VELOCITY_PORT)
+  --lobby-port PORT      Minestom lobby port (default: $LOBBY_PORT)
+  --paper-port PORT      Paper content server port (default: $PAPER_PORT)
+  --auth-port PORT       Auth web server port (default: $AUTH_PORT)
+  -h, --help             Show this help and exit
+USAGE
+}
+
+is_valid_port() { [[ "$1" =~ ^[0-9]+$ ]] && [ "$1" -ge 1 ] && [ "$1" -le 65535 ]; }
+
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --velocity-port) VELOCITY_PORT="$2"; shift 2 ;;
+    --velocity-port=*) VELOCITY_PORT="${1#*=}"; shift ;;
+    --lobby-port) LOBBY_PORT="$2"; shift 2 ;;
+    --lobby-port=*) LOBBY_PORT="${1#*=}"; shift ;;
+    --paper-port) PAPER_PORT="$2"; shift 2 ;;
+    --paper-port=*) PAPER_PORT="${1#*=}"; shift ;;
+    --auth-port) AUTH_PORT="$2"; shift 2 ;;
+    --auth-port=*) AUTH_PORT="${1#*=}"; shift ;;
+    -h|--help) usage; exit 0 ;;
+    *) echo "Unknown option: $1" >&2; usage >&2; exit 1 ;;
+  esac
+done
+
+for name in VELOCITY_PORT LOBBY_PORT PAPER_PORT AUTH_PORT; do
+  is_valid_port "${!name}" || { echo "Invalid port for $name: ${!name}" >&2; usage >&2; exit 1; }
+done
+
 if [ "$RUN_DIR" = "$PROJECT_ROOT" ]; then
   echo "Refusing to run inside the repo root (it would litter the source tree)." >&2
   echo "Make a scratch dir and run from there, e.g.:  mkdir ~/smp-test && cd ~/smp-test && $0" >&2
@@ -40,12 +83,6 @@ if [ -x "$JAVA25" ]; then JAVA="$JAVA25"; else JAVA="java"; fi
 # ---------------------------------------------------------------- versions
 PAPER_VERSION="26.2"                 # Paper server (Minecraft 26.2)
 VELOCITY_VERSION="3.5.0-SNAPSHOT"    # first line that speaks the Minecraft 26.2 protocol
-
-# ---------------------------------------------------------------- ports
-VELOCITY_PORT=25565   # players connect here
-LOBBY_PORT=25566      # Minestom lobby (Velocity server "lobby")
-PAPER_PORT=25567      # Paper content server (Velocity server "content")
-AUTH_PORT=8080        # auth web server
 
 # ---------------------------------------------------------------- secrets (defaults, overridable)
 FORWARDING_SECRET="smp-test-forwarding-secret"   # Velocity <-> lobby/paper modern forwarding
