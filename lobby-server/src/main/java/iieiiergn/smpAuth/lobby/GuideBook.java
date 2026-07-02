@@ -33,10 +33,9 @@ final class GuideBook {
                         .hoverEvent(net.kyori.adventure.text.event.HoverEvent.showText(
                                 Component.text(config.authLoginUrl))))
                 .append(Component.newline()).append(Component.newline())
-                .append(Component.text("2. 인증 후 발급된 키를 아래 버튼으로 입력하세요.", NamedTextColor.BLACK))
-                .append(Component.newline())
-                .append(Component.text("[/verify 입력하기]", NamedTextColor.BLUE, TextDecoration.UNDERLINED)
-                        .clickEvent(ClickEvent.suggestCommand("/verify ")))
+                .append(Component.text("2. 인증 후 발급된 키를 채팅창에 ", NamedTextColor.BLACK))
+                .append(Component.text("/verify <키>", NamedTextColor.DARK_GREEN))
+                .append(Component.text(" 로 입력하세요.", NamedTextColor.BLACK))
                 .append(Component.newline()).append(Component.newline())
                 .append(Component.text("인증이 완료되면 자동으로 다른 서버로 이동할 수 있습니다.",
                         NamedTextColor.DARK_GRAY))
@@ -75,7 +74,7 @@ final class GuideBook {
                 .append(Component.text("엔더 드래곤의 죽음은 SMP 서버의 꽃이자 재앙입니다. 게임의 진행 속도를 조절하기 위해 아래와 같은 조정이 적용됩니다.",
                         NamedTextColor.BLACK))
                 .append(Component.newline())
-                .append(Component.text("체력 1000으로 증가됩니다.\n폭발·원거리 공격에 면역이며 매초 서서히 체력을 회복합니다. 정면 승부를 준비하세요.",
+                .append(Component.text("체력 1000으로 증가됩니다.\n폭발·원거리 공격에 면역이며 매초 서서히 체력을 회복합니다. 정면 승부를 준비하세요.",
                         NamedTextColor.BLACK))
                 .append(Component.newline()).append(Component.newline())
                 .append(Component.text("이름표", NamedTextColor.DARK_RED, TextDecoration.BOLD))

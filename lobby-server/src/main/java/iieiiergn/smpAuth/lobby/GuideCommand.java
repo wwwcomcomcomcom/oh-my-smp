@@ -2,6 +2,9 @@ package iieiiergn.smpAuth.lobby;
 
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.event.ClickEvent;
+import net.kyori.adventure.text.format.NamedTextColor;
+import net.kyori.adventure.text.format.TextDecoration;
 import net.minestom.server.command.builder.Command;
 import net.minestom.server.entity.Player;
 
@@ -19,6 +22,11 @@ public final class GuideCommand extends Command {
                 return;
             }
             player.openBook(book);
+            // ClickEvent.suggestCommand has no effect inside written books (Mojang restriction),
+            // so offer the working button via chat instead.
+            player.sendMessage(Component.text("키를 입력하려면 클릭하세요: ", NamedTextColor.GRAY)
+                    .append(Component.text("[/verify 입력하기]", NamedTextColor.BLUE, TextDecoration.UNDERLINED)
+                            .clickEvent(ClickEvent.suggestCommand("/verify "))));
         });
     }
 }
