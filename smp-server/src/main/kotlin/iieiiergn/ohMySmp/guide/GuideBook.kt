@@ -32,18 +32,18 @@ object GuideBook {
                     "반경 ${num(config.borderRadius)}블록까지만 이동할 수 있습니다."
             ))
             .append(Component.newline()).append(Component.newline())
-            .append(subHeading("전투 태그"))
+            .append(subHeading("전투 상태"))
             .append(Component.newline())
             .append(body(
-                "피해를 입으면 ${config.combatDurationSeconds}초간 전투 상태가 되며, " +
-                    "전투 중 접속을 종료하면 인벤토리 전체를 드롭하고 사망 처리됩니다."
+                "플레이어에게 피해를 입으면 전투 상태가 되며, 이 동안 로그아웃하면 사망 처리됩니다. " +
+                    "${config.combatDurationSeconds}초간 피해를 입지 않으면 전투 상태가 해제됩니다."
             ))
             .append(Component.newline()).append(Component.newline())
-            .append(subHeading("자연사 드롭"))
+            .append(subHeading("인벤세이브"))
             .append(Component.newline())
             .append(body(
-                "전투가 아닌 사망(추락, 익사 등) 시 인벤토리의 각 아이템 스택이 " +
-                    "${num(config.naturalDropChance * 100)}% 확률로 사라집니다."
+                "전투가 아닌 사망(추락, 익사 등) 시 모든 인벤토리를 잃는 대신, " +
+                    "각 아이템이 ${num(config.naturalDropChance * 100)}% 확률로 드랍됩니다."
             ))
             .build()
 
@@ -61,8 +61,14 @@ object GuideBook {
             .append(subHeading("엔더 드래곤"))
             .append(Component.newline())
             .append(body(
-                "체력 ${num(config.dragonMaxHealth)}, $immunityText" +
-                    "${num(regenSeconds)}초마다 체력 ${num(config.dragonRegenAmount)}을 회복합니다."
+                "엔더 드래곤의 죽음은 SMP 서버의 꽃이자 재앙입니다. " +
+                    "게임의 진행 속도를 조절하기 위해 아래와 같은 조정이 적용됩니다."
+            ))
+            .append(Component.newline())
+            .append(body(
+                "체력 ${num(config.dragonMaxHealth)}로 증가됩니다.\n" +
+                    "$immunityText${num(regenSeconds)}초마다 체력 ${num(config.dragonRegenAmount)}을 " +
+                    "회복합니다. 정면 승부를 준비하세요."
             ))
             .append(Component.newline()).append(Component.newline())
 
@@ -71,7 +77,7 @@ object GuideBook {
                 .append(subHeading("이름표"))
                 .append(Component.newline())
                 .append(body(
-                    "인증된 학생 플레이어는 머리 위에 학번과 이름이 표시됩니다. " +
+                    "DataGSM으로 인증된 플레이어는 머리 위에 이름이 표시됩니다. " +
                         "/student-info 명령어로 다른 플레이어의 정보를 확인할 수 있습니다."
                 ))
                 .append(Component.newline()).append(Component.newline())
