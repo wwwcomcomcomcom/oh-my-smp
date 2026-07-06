@@ -6,7 +6,7 @@ paths:
 # sample-content-plugin — 참조 예제 (배포 안 함)
 
 content-lib(SmpAuth) API 사용법을 보여주는 **레퍼런스 전용** 모듈이다.
-`setup.sh`가 배포하지 않으며, 실서버에 올라가지 않는다.
+`smp.sh`가 배포하지 않으며, 실서버에 올라가지 않는다.
 
 ## 규칙
 

@@ -40,4 +40,4 @@ paths:
   (`gradle/libs.versions.toml`의 `datagsm`). OAuth URL 빌드·토큰 교환·UserInfo 조회를 전부 SDK가 처리.
 - `KeyStore.issue()`의 `val keyLength = length` 로컬 캡처는 `buildString {}` 리시버의
   `StringBuilder.length`(0)에 셰도잉되는 걸 막기 위한 것 — 제거하면 무한 루프성 버그가 된다.
-- 전체 플로우 검증은 스크래치 디렉토리에서 `setup.sh` 스택으로 한다. 유닛테스트는 두지 않는다.
+- 전체 플로우 검증은 스크래치 디렉토리에서 `smp.sh` 스택으로 한다. 유닛테스트는 두지 않는다.

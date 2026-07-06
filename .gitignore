@@ -25,7 +25,7 @@ _workspace
 **/application.local.conf
 **/*.local.properties
 **/config.local.*
-secrets.env
+profiles/production.env
 
 # SQLite auth DB
 *.db

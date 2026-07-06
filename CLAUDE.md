@@ -18,7 +18,7 @@ Modules (`settings.gradle.kts`):
 | `velocity-plugin` | Java | Velocity proxy plugin — gates servers behind auth, forwards auth data. |
 | `lobby-server` | Java/Minestom | The login lobby players land in first. |
 | `content-lib` | Java | Paper plugin **SmpAuth**; exposes `iieiiergn.smpAuth.paperlib.SmpAuth` + `AuthDataLoadedEvent` to content plugins. Bundles `common`. |
-| `sample-content-plugin` | Java | Reference content plugin (not deployed by `setup.sh`). |
+| `sample-content-plugin` | Java | Reference content plugin (not deployed by `smp.sh`). |
 | `smp-server` | Kotlin | **oh-my-smp** — the Paper SMP gameplay plugin. Compiles against `:content-lib`. |
 
 Everything targets the **Java 25 toolchain**; versions are centralized in `gradle/libs.versions.toml`. The JDK 25 location is pinned in `gradle.properties` (brew `openjdk@25`) — adjust if yours lives elsewhere.
@@ -29,21 +29,22 @@ Everything targets the **Java 25 toolchain**; versions are centralized in `gradl
 - `./gradlew :smp-server:build` — just the oh-my-smp plugin. **Deployable artifact is `smp-server/build/libs/oh-my-smp-<version>-all.jar`** (the `-all` shadow jar, which bundles the Kotlin stdlib). The plain `oh-my-smp-<version>.jar` lacks the Kotlin runtime and throws `NoClassDefFoundError` if dropped into a server — never deploy it. The artifact keeps the `oh-my-smp` base name (via `base.archivesName`) even though the module dir is `smp-server`.
 - `./gradlew :smp-server:runServer` — launches a standalone Paper test server under `smp-server/run/` with just this plugin. Without the SmpAuth plugin present the nametag/`/student-info` features self-disable (logged warning); other gameplay works. First run stops on the Mojang EULA; set `eula=true` in `smp-server/run/eula.txt` to continue. There are no unit tests; verify behavior on a server.
 
-### Full test network — `setup.sh`
+### Full test network — `smp.sh`
 
-`./setup.sh` provisions the **whole 4-process stack** (auth + Minestom lobby + Velocity + a Paper "content" server running SmpAuth + oh-my-smp) into whatever scratch directory you run it from:
+`smp.sh` is the single CLI for the **whole 4-process stack** (auth + Minestom lobby + Velocity + a Paper "content" server running SmpAuth + oh-my-smp). It is driven by a **profile** (Spring-Boot style): `profiles/local.env` (committed test defaults, works out of the box) or `profiles/production.env` (gitignored; copy `profiles/production.env.example` and fill in real credentials). The profile is the **single source of truth** — all generated configs (`auth/config.properties`, `lobby/config.properties`, `velocity.toml`, `forwarding.secret`, the smp-auth plugin config, `server.properties`, the `paper-global.yml` forwarding patch) are re-rendered from it on every `start`. **Never hand-edit the rendered files**; edit the profile and restart.
 
 ```
 mkdir ~/smp-test && cd ~/smp-test
-/path/to/oh-my-smp/setup.sh   # builds jars, downloads Velocity + Paper, writes configs, patches Paper forwarding
-./start-all.sh                # launch all four (each in its own tmux session); connect a 26.2 client to 127.0.0.1:25565
-./console.sh {auth|lobby|velocity|paper}   # attach to a server's console to run admin commands (detach: Ctrl-B, D)
-./stop-all.sh
+/path/to/oh-my-smp/smp.sh setup [--profile production]   # build jars, download Velocity + Paper, render configs, first-boot Paper (default profile: local, recorded in .smp-profile)
+/path/to/oh-my-smp/smp.sh start          # re-render configs + launch all four (tmux); connect a 26.2 client to 127.0.0.1:25565
+/path/to/oh-my-smp/smp.sh console paper  # attach to a server's console to run admin commands (detach: Ctrl-B, D)
+/path/to/oh-my-smp/smp.sh status         # active profile + per-server state
+/path/to/oh-my-smp/smp.sh stop
 ```
 
-It refuses to run inside the repo root (to avoid littering the source tree). Ports: Velocity 25565, lobby 25566, Paper 25567, auth 8080. Override secrets by dropping a `secrets.env` next to where you run it. Requires `tmux` (`brew install tmux`) for console access.
+It refuses to run inside the repo root (to avoid littering the source tree). Default ports: Velocity 25565, lobby 25566, Paper 25567, auth 8080 — all overridable in the profile, along with secrets, DataGSM OAuth credentials/scope, `PUBLIC_BASE_URL`, gated servers, online-mode, heap sizes, and Paper/Velocity versions (full schema in `profiles/local.env`). Requires `tmux` (`brew install tmux`) for console access.
 
-After code changes, run `/path/to/oh-my-smp/update.sh` from the same scratch directory to rebuild and swap in **only the jars** (configs, the auth SQLite db, and Paper worlds are untouched) — no need to rerun `setup.sh`. Pass `--restart` to also bounce the whole stack; otherwise restart manually (`./stop-all.sh && ./start-all.sh`) since running servers keep their loaded classes.
+After code changes, run `smp.sh update` from the same scratch directory to rebuild and swap in **only the jars** (configs, the auth SQLite db, and Paper worlds are untouched). Pass `--restart` to also bounce the whole stack; otherwise `smp.sh restart` manually, since running servers keep their loaded classes. After profile changes, a plain `smp.sh restart` suffices (configs re-render on start).
 
 ## Architecture (smp-server / oh-my-smp)
 

@@ -44,5 +44,5 @@ SmpAuth 부재 시 `NoClassDefFoundError`로 플러그인 전체가 죽는다. �
   노출하고 `onDisable()`에서 반드시 해제. `NametagManager`도 `clearAll()`로 팀을 정리한다.
 - 상태 맵은 `ConcurrentHashMap` + 지연 만료(조회 시 정리) 패턴(`CombatManager` 참고).
 - 검증은 서버 실행으로: 단독 기능은 `:smp-server:runServer`(SmpAuth 없으면 이름표 기능은
-  자동 스킵), 인증 연동 기능은 스크래치 디렉토리에서 `setup.sh` 풀스택. 유닛테스트는 두지 않는다.
+  자동 스킵), 인증 연동 기능은 스크래치 디렉토리에서 `smp.sh` 풀스택. 유닛테스트는 두지 않는다.
 - config.yml 변경은 서버 재시작 필요(리로드 커맨드 없음) — 기능 검증 시 잊지 말 것.
