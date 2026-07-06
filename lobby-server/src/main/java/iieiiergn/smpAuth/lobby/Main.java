@@ -1,5 +1,6 @@
 package iieiiergn.smpAuth.lobby;
 
+import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.minestom.server.Auth;
@@ -10,6 +11,7 @@ import net.minestom.server.event.player.AsyncPlayerConfigurationEvent;
 import net.minestom.server.event.player.PlayerSpawnEvent;
 import net.minestom.server.instance.InstanceContainer;
 import net.minestom.server.instance.block.Block;
+import net.minestom.server.timer.TaskSchedule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -34,22 +36,29 @@ public final class Main {
         InstanceContainer instance = MinecraftServer.getInstanceManager().createInstanceContainer();
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
 
+        Book guideBook = GuideBook.build(config);
+
         GlobalEventHandler events = MinecraftServer.getGlobalEventHandler();
         events.addListener(AsyncPlayerConfigurationEvent.class, event -> {
             event.setSpawningInstance(instance);
             event.getPlayer().setRespawnPoint(new Pos(0.5, 41, 0.5));
         });
         events.addListener(PlayerSpawnEvent.class, event -> {
-            if (!event.isFirstSpawn()) return;
-            event.getPlayer().sendMessage(Component.text(
-                    "인증하려면 /login, 명령어와 서버 규칙 안내는 /guide 를 입력하세요.",
+            var player = event.getPlayer();
+            player.sendMessage(Component.text(
+                    "인증하려면 /login 을 입력하세요. 안내서는 /guide 로 다시 볼 수 있습니다.",
                     NamedTextColor.YELLOW));
+            // The client ignores an OpenBookPacket sent while it's still on the join loading
+            // screen, so wait a few ticks until it has actually rendered the world.
+            player.scheduler().buildTask(() -> GuideCommand.show(player, guideBook))
+                    .delay(TaskSchedule.tick(20))
+                    .schedule();
         });
 
         AuthClient authClient = new AuthClient(config.authServerBaseUrl, config.sharedSecret);
         MinecraftServer.getCommandManager().register(new LoginCommand(config));
         MinecraftServer.getCommandManager().register(new VerifyCommand(authClient));
-        MinecraftServer.getCommandManager().register(new GuideCommand(config));
+        MinecraftServer.getCommandManager().register(new GuideCommand(guideBook));
 
         server.start(config.host, config.port);
         LOGGER.info("Lobby started on {}:{}", config.host, config.port);

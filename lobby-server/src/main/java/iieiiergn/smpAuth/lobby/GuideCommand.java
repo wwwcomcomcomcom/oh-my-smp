@@ -11,22 +11,25 @@ import net.minestom.server.entity.Player;
 /** {@code /guide} — opens a written book covering /login, /verify and oh-my-smp server rules. */
 public final class GuideCommand extends Command {
 
-    public GuideCommand(LobbyConfig config) {
+    public GuideCommand(Book book) {
         super("guide", "rules");
-
-        Book book = GuideBook.build(config);
 
         setDefaultExecutor((sender, context) -> {
             if (!(sender instanceof Player player)) {
                 sender.sendMessage(Component.text("플레이어만 사용할 수 있습니다."));
                 return;
             }
-            player.openBook(book);
-            // ClickEvent.suggestCommand has no effect inside written books (Mojang restriction),
-            // so offer the working button via chat instead.
-            player.sendMessage(Component.text("키를 입력하려면 클릭하세요: ", NamedTextColor.GRAY)
-                    .append(Component.text("[/verify 입력하기]", NamedTextColor.BLUE, TextDecoration.UNDERLINED)
-                            .clickEvent(ClickEvent.suggestCommand("/verify "))));
+            show(player, book);
         });
+    }
+
+    /** Opens the guide book for {@code player}; also used to auto-show it on first spawn. */
+    static void show(Player player, Book book) {
+        player.openBook(book);
+        // ClickEvent.suggestCommand has no effect inside written books (Mojang restriction),
+        // so offer the working button via chat instead.
+        player.sendMessage(Component.text("키를 입력하려면 클릭하세요: ", NamedTextColor.GRAY)
+                .append(Component.text("[/verify 입력하기]", NamedTextColor.BLUE, TextDecoration.UNDERLINED)
+                        .clickEvent(ClickEvent.suggestCommand("/verify "))));
     }
 }
