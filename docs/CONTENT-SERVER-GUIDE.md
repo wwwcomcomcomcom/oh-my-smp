@@ -3,10 +3,10 @@
 How to read a player's **DataGSM auth data** (student name, grade, class, major, GitHub, …)
 on a Paper/Spigot content server in the smp-robby network.
 
-You do **not** talk to the auth-server or the OAuth flow yourself. By the time a player
-reaches your content server, Velocity has already verified they are linked (unlinked players
-are blocked from transferring) and holds their data globally. Your server just asks for it
-over plugin messaging — and the `SmpAuth` plugin does that for you.
+You do **not** talk to the OAuth flow yourself. By the time a player reaches your content
+server, Velocity has already verified they are linked (unlinked players are blocked from
+transferring). The `SmpAuth` plugin then reads that player's link straight from the
+auth-server (the source of truth) on join, caches it, and exposes it to you.
 
 ---
 
@@ -19,8 +19,10 @@ Build it and drop it into your content server's `plugins/` folder:
 # -> content-lib/build/libs/content-lib.jar   (rename to SmpAuth.jar if you like)
 ```
 
-`SmpAuth` registers the `smpauth:data` plugin channel, requests each joining player's data
-from Velocity, caches it, and exposes it. No configuration needed.
+On join, `SmpAuth` fetches each player's link directly from the auth-server, caches it, and
+exposes it. It needs `plugins/SmpAuth/config.yml` with the auth-server base URL and the
+shared secret (the internal server-to-server credential); under the full stack `smp.sh`
+renders this for you from the active profile.
 
 > Requirement: content servers run on **Java 25+** (the whole network targets Java 25) and
 > behind the same Velocity proxy with modern forwarding enabled.
