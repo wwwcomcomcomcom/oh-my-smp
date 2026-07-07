@@ -31,7 +31,10 @@ Everything targets the **Java 25 toolchain**; versions are centralized in `gradl
 
 ### Full test network — `smp.sh`
 
-`smp.sh` is the single CLI for the **whole 4-process stack** (auth + Minestom lobby + Velocity + a Paper "content" server running SmpAuth + oh-my-smp). It is driven by a **profile** (Spring-Boot style): `profiles/local.env` (committed test defaults, works out of the box) or `profiles/production.env` (gitignored; copy `profiles/production.env.example` and fill in real credentials). The profile is the **single source of truth** — all generated configs (`auth/config.properties`, `lobby/config.properties`, `velocity.toml`, `forwarding.secret`, the smp-auth plugin config, `server.properties`, the `paper-global.yml` forwarding patch) are re-rendered from it on every `start`. **Never hand-edit the rendered files**; edit the profile and restart.
+`smp.sh` is the single CLI for the **whole 4-process stack** (auth + Minestom lobby + Velocity + a Paper "content" server running SmpAuth + oh-my-smp). It is driven by a **profile** (Spring-Boot style): `profiles/local.env` (committed test defaults, works out of the box) or `profiles/production.env` (gitignored; copy `profiles/production.env.example` and fill in real credentials). The profile is the **single source of truth**. On every `start` two kinds of files are (re)generated from it:
+
+- **Fully rewritten** (owned entirely by smp.sh — don't hand-edit): `auth/config.properties`, `lobby/config.properties`, `forwarding.secret`, the smp-auth plugin config, the oh-my-smp gameplay `config.yml`.
+- **Patched in place** (only the profile-owned keys are upserted; every other key is the admin's and is preserved): `server.properties`, `velocity.toml`, and the `paper-global.yml` velocity-forwarding block. Edit non-profile keys here freely; edit profile-owned keys (ports, online-mode, motd, max-players, level-type, border/combat/dragon rules, …) in the profile, since a restart would overwrite them.
 
 ```
 mkdir ~/smp-test && cd ~/smp-test
