@@ -463,6 +463,17 @@ gatedServers=${SMP_GATED_SERVERS}
 EOF
 }
 
+# Config for the Paper-side SmpAuth plugin (content-lib). It reads each joining
+# player's link straight from the auth-server, so it needs the same base URL +
+# shared secret as the proxy — the internal server-to-server auth credential.
+render_paper_smpauth_config() {
+  cat > "$RUN_DIR/paper/plugins/SmpAuth/config.yml" <<EOF
+$(gen_header)
+auth-server-base-url: http://127.0.0.1:${SMP_AUTH_PORT}
+shared-secret: ${SMP_SHARED_SECRET}
+EOF
+}
+
 # server.properties is partially managed: the full template is written only when
 # the file is absent; afterwards only the profile-owned keys are patched in place,
 # so admin edits (and the many defaults Paper fills in on boot) are preserved.
@@ -565,12 +576,13 @@ PY
 render_all() {
   mkdir -p "$RUN_DIR"/auth "$RUN_DIR"/lobby \
            "$RUN_DIR"/velocity/plugins/smp-auth \
-           "$RUN_DIR"/paper/plugins/oh-my-smp "$RUN_DIR"/paper/config
+           "$RUN_DIR"/paper/plugins/oh-my-smp "$RUN_DIR"/paper/plugins/SmpAuth "$RUN_DIR"/paper/config
   log "Rendering configs from profiles/$PROFILE.env…"
   render_auth_config
   render_lobby_config
   render_velocity_toml
   render_smpauth_config
+  render_paper_smpauth_config
   render_paper_config
   render_ohmysmp_config
   patch_paper_global
@@ -807,7 +819,7 @@ cmd_render() {
   load_profile
   validate_profile
   render_all
-  log "Rendered (full): auth/config.properties lobby/config.properties velocity/plugins/smp-auth/config.properties paper/plugins/oh-my-smp/config.yml velocity/forwarding.secret"
+  log "Rendered (full): auth/config.properties lobby/config.properties velocity/plugins/smp-auth/config.properties paper/plugins/SmpAuth/config.yml paper/plugins/oh-my-smp/config.yml velocity/forwarding.secret"
   log "Patched (profile-owned keys only, admin edits preserved): paper/server.properties velocity/velocity.toml paper/config/paper-global.yml"
 }
 

@@ -1,0 +1,5 @@
+# SmpAuth reads each joining player's DataGSM link straight from the auth-server
+# (the source of truth). In the full stack, smp.sh renders these values from the
+# active profile; edit the profile, not this file, when running under smp.sh.
+auth-server-base-url: http://127.0.0.1:8080
+shared-secret: ""
