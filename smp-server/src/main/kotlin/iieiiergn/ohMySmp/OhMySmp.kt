@@ -14,6 +14,8 @@ import iieiiergn.ohMySmp.listener.RespawnListener
 import iieiiergn.ohMySmp.nametag.NametagListener
 import iieiiergn.ohMySmp.nametag.NametagManager
 import iieiiergn.ohMySmp.nametag.StudentInfoCommand
+import iieiiergn.ohMySmp.tpa.TpaCommand
+import iieiiergn.ohMySmp.tpa.TpaManager
 import org.bukkit.plugin.java.JavaPlugin
 
 class OhMySmp : JavaPlugin() {
@@ -69,6 +71,14 @@ class OhMySmp : JavaPlugin() {
         getCommand("guide")?.setExecutor(GuideCommand(pluginConfig, nametagManager != null))
         guideBroadcaster = GuideBroadcaster(this, pluginConfig)
         guideBroadcaster.start()
+
+        // 8. TPA: 컴뱃 중에는 사용 불가
+        val tpaManager = TpaManager()
+        getCommand("tpa")?.let {
+            val executor = TpaCommand(combatManager, tpaManager)
+            it.setExecutor(executor)
+            it.tabCompleter = executor
+        }
 
         logger.info("oh-my-smp 활성화 완료.")
     }
