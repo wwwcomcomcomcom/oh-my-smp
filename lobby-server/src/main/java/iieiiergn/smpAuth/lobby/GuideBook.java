@@ -54,7 +54,8 @@ final class GuideBook {
                 .append(Component.text("전투 상태", NamedTextColor.DARK_RED, TextDecoration.BOLD))
                 .append(Component.newline())
                 .append(Component.text("플레이어에게 피해를 입으면 전투 상태가 되며, 이 동안 로그아웃하면 " +
-                                "사망 처리됩니다. 15초간 피해를 입지 않으면 전투 상태가 해제됩니다.",
+                                "사망 처리되어 인벤토리를 전부 바닥에 떨어뜨립니다. " +
+                                "15초간 피해를 입지 않으면 전투 상태가 해제됩니다.",
                         NamedTextColor.BLACK))
                 .append(Component.newline()).append(Component.newline())
                 .append(Component.text("인벤세이브", NamedTextColor.DARK_RED, TextDecoration.BOLD))

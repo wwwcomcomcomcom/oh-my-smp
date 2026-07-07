@@ -35,7 +35,8 @@ object GuideBook {
             .append(subHeading("전투 상태"))
             .append(Component.newline())
             .append(body(
-                "플레이어에게 피해를 입으면 전투 상태가 되며, 이 동안 로그아웃하면 사망 처리됩니다. " +
+                "플레이어에게 피해를 입으면 전투 상태가 되며, 이 동안 로그아웃하면 사망 처리되어 " +
+                    "인벤토리를 전부 바닥에 떨어뜨립니다. " +
                     "${config.combatDurationSeconds}초간 피해를 입지 않으면 전투 상태가 해제됩니다."
             ))
             .append(Component.newline()).append(Component.newline())
