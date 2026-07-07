@@ -207,6 +207,21 @@ build_jars() {
   case "$SMP_JAVA" in
     /*/bin/java) genv=(JAVA_HOME="${SMP_JAVA%/bin/java}") ;;
   esac
+  # Diagnostic: show exactly which JVM Gradle will run on. Gradle compiles the
+  # version-catalog accessors with its OWN runtime JVM, so this must be a full
+  # JDK (with javac) — a JRE here yields "No Java compiler found".
+  if [ ${#genv[@]} -gt 0 ]; then
+    local jhome="${genv[0]#JAVA_HOME=}"
+    log "Gradle JAVA_HOME: $jhome (from SMP_JAVA=$SMP_JAVA)"
+    if [ -x "$jhome/bin/javac" ]; then
+      log "  javac: $("$jhome/bin/javac" --version 2>&1)"
+    else
+      log "  WARNING: no javac at $jhome/bin/javac — this looks like a JRE, not a JDK."
+    fi
+  else
+    log "Gradle JAVA_HOME: (unset) — using JAVA_HOME env / PATH java: $(command -v java || echo none)"
+    log "  javac on PATH: $(command -v javac >/dev/null 2>&1 && javac --version 2>&1 || echo 'none — this is a JRE')"
+  fi
   ( cd "$PROJECT_ROOT" && env ${genv[@]+"${genv[@]}"} ./gradlew --console=plain \
       :auth-server:shadowJar :lobby-server:shadowJar :velocity-plugin:shadowJar \
       :content-lib:shadowJar :smp-server:shadowJar )
