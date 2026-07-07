@@ -55,10 +55,16 @@ public final class Main {
                 if (student != null) {
                     player.sendMessage(Component.text(
                             "인증된 사용자입니다. 서버로 이동합니다...", NamedTextColor.GREEN));
+                    player.sendMessage(Component.text(
+                            "이동되지 않으면 /server content 를 사용해주세요.", NamedTextColor.GRAY));
                     // Reuse the /verify success path: Velocity reloads the link and auto-connects
                     // the player to the content server (see SmpAuthVelocity#sendToContentServer).
-                    player.sendPluginMessage(Channels.AUTH,
-                            AuthMessage.linkUpdated(player.getUuid().toString()).encode());
+                    // Delay it a few ticks — sending it during spawn (before the player has fully
+                    // joined the lobby backend) makes Velocity's connection request fail silently.
+                    player.scheduler().buildTask(() -> player.sendPluginMessage(Channels.AUTH,
+                                    AuthMessage.linkUpdated(player.getUuid().toString()).encode()))
+                            .delay(TaskSchedule.tick(20))
+                            .schedule();
                     return;
                 }
                 player.sendMessage(Component.text(
