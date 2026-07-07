@@ -1,9 +1,9 @@
 [versions]
 java = "25"
 kotlin = "2.3.21"
-minestom = "26_2-SNAPSHOT"
+minestom = "2026.07.01-26.1.2"
 velocity = "3.4.0"
-paper = "26.2.build.40-alpha"
+paper = "26.1.2.build.74-stable"
 ktor = "3.5.1"
 gson = "2.14.0"
 sqlite = "3.53.2.0"

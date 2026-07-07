@@ -14,7 +14,7 @@ dependencyResolutionManagement {
         mavenCentral()
         // Velocity + Paper API
         maven("https://repo.papermc.io/repository/maven-public/")
-        // Minestom snapshots (26_2-SNAPSHOT lives here, not on Central yet)
+        // Minestom snapshots (kept for snapshot builds; the pinned 26.1.2 release lives on Central)
         maven("https://central.sonatype.com/repository/maven-snapshots/") {
             content { includeGroup("net.minestom") }
             mavenContent { snapshotsOnly() }

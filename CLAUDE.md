@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## What this is
 
-A **multi-module Gradle build** for an SMP (Survival Multiplayer) test network on Minecraft **26.2**. It bundles two things that used to live in separate repos:
+A **multi-module Gradle build** for an SMP (Survival Multiplayer) test network on Minecraft **26.1.2**. It bundles two things that used to live in separate repos:
 
 1. **The SmpAuth auth stack** (formerly `smp-robby`) — DataGSM OAuth login gated through a Velocity proxy and a Minestom lobby, plus a Paper-side content library.
 2. **The oh-my-smp Paper plugin** (`smp-server` module) — the actual SMP gameplay rules (world border, combat tagging, ender dragon buffs, student nametags), which consumes the auth data via `content-lib`.
@@ -36,7 +36,7 @@ Everything targets the **Java 25 toolchain**; versions are centralized in `gradl
 ```
 mkdir ~/smp-test && cd ~/smp-test
 /path/to/oh-my-smp/smp.sh setup [--profile production]   # build jars, download Velocity + Paper, render configs, first-boot Paper (default profile: local, recorded in .smp-profile)
-/path/to/oh-my-smp/smp.sh start          # re-render configs + launch all four (tmux); connect a 26.2 client to 127.0.0.1:25565
+/path/to/oh-my-smp/smp.sh start          # re-render configs + launch all four (tmux); connect a 26.1.2 client to 127.0.0.1:25565
 /path/to/oh-my-smp/smp.sh console paper  # attach to a server's console to run admin commands (detach: Ctrl-B, D)
 /path/to/oh-my-smp/smp.sh status         # active profile + per-server state
 /path/to/oh-my-smp/smp.sh stop

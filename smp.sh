@@ -91,7 +91,7 @@ profile_defaults() {
   SMP_LEVEL_TYPE='minecraft\:flat'
   # runtime / versions
   SMP_JAVA=""               # empty => brew openjdk@25 if present, else "java" on PATH
-  SMP_PAPER_VERSION="26.2"
+  SMP_PAPER_VERSION="26.1.2"
   SMP_VELOCITY_VERSION="3.5.0-SNAPSHOT"
   SMP_PAPER_HEAP="-Xms1G -Xmx2G"
   SMP_VELOCITY_HEAP="-Xms256M -Xmx512M -XX:+UseG1GC"
@@ -512,7 +512,7 @@ cmd_start() {
     cat <<MSG
 
 All four processes launched (profile: $PROFILE), each in its own tmux session.
-  • Connect a Minecraft 26.2 client to  127.0.0.1:${SMP_VELOCITY_PORT}
+  • Connect a Minecraft 26.1.2 client to  127.0.0.1:${SMP_VELOCITY_PORT}
   • In the lobby:  /login  → open the URL → DataGSM → /verify <key>
   • Then hop to the content server:  /server content   (oh-my-smp gameplay)
 

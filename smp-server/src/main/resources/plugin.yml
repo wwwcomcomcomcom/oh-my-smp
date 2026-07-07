@@ -2,7 +2,7 @@ name: oh-my-smp
 version: '${version}'
 
 main: iieiiergn.ohMySmp.OhMySmp
-api-version: '26.2'
+api-version: '26.1.2'
 load: POSTWORLD
 
 # 학번 이름표/명령어 기능은 SmpAuth 플러그인의 인증 데이터를 사용한다.

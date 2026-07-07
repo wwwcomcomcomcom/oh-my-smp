@@ -28,6 +28,6 @@ Bukkit/Velocity 플러그인이 **아니라** `Main.main()`에서 서버를 직�
   ② 성공 시 `LINK_UPDATED` 플러그인 메시지로 Velocity에 상태 리로드 통지.
   ②를 빼먹으면 DB에는 링크됐는데 게이트는 안 열리는 상태가 된다.
 - `AuthClient.bind()`는 실패(만료 키·네트워크 오류)를 null로 돌려준다 — 콜백에서 null이 "실패" 경로.
-- Minestom은 스냅샷 버전(`26_2-SNAPSHOT`)이며 Sonatype snapshots 저장소에서 온다
-  (settings.gradle.kts에 `net.minestom` 그룹 한정으로 등록돼 있음). 버전 갱신은
-  `gradle/libs.versions.toml`의 `minestom`.
+- Minestom은 26.1.2용 정식 릴리스(`2026.07.01-26.1.2`)를 Maven Central에서 받는다.
+  (settings.gradle.kts에는 스냅샷 빌드용 Sonatype snapshots 저장소도 `net.minestom`
+  그룹 한정으로 남아 있음). 버전 갱신은 `gradle/libs.versions.toml`의 `minestom`.
