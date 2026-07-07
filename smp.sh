@@ -457,7 +457,10 @@ render_paper_config() {
   if [ ! -f "$sp" ]; then
     cat > "$sp" <<EOF
 $(gen_header_patch)
-online-mode=${SMP_ONLINE_MODE}
+# Always false on the backend: Velocity does the Mojang auth (its online-mode is
+# SMP_ONLINE_MODE) and hands the verified profile over via modern forwarding.
+# A true here makes Paper re-authenticate the proxy connection and login breaks.
+online-mode=false
 server-port=${SMP_PAPER_PORT}
 server-ip=127.0.0.1
 motd=SMP Content
@@ -473,7 +476,7 @@ allow-nether=false
 EOF
   else
     patch_properties "$sp" \
-      "online-mode=${SMP_ONLINE_MODE}" \
+      "online-mode=false" \
       "server-port=${SMP_PAPER_PORT}" \
       "server-ip=127.0.0.1" \
       "level-type=${SMP_LEVEL_TYPE}" \
