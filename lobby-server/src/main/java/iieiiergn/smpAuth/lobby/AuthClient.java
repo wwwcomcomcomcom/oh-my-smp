@@ -3,7 +3,6 @@ package iieiiergn.smpAuth.lobby;
 import iieiiergn.smpAuth.common.Json;
 import iieiiergn.smpAuth.common.RestDtos.BindRequest;
 import iieiiergn.smpAuth.common.RestDtos.BindResponse;
-import iieiiergn.smpAuth.common.RestDtos.LinkResponse;
 import iieiiergn.smpAuth.common.StudentData;
 
 import java.net.URI;
@@ -45,26 +44,6 @@ public final class AuthClient {
                     if (resp.statusCode() != 200) return null;
                     BindResponse parsed = Json.GSON.fromJson(resp.body(), BindResponse.class);
                     return parsed != null ? parsed.student() : null;
-                })
-                .exceptionally(ex -> null);
-    }
-
-    /**
-     * GET /api/links/{uuid} → the student snapshot if this UUID is already linked, else null.
-     * Used on lobby spawn to detect already-authenticated players; returns null on error too,
-     * so the safe fallback is "treat as unauthenticated" (show the guide).
-     */
-    public CompletableFuture<StudentData> fetchLink(UUID uuid) {
-        HttpRequest req = HttpRequest.newBuilder(URI.create(baseUrl + "/api/links/" + uuid))
-                .timeout(Duration.ofSeconds(5))
-                .header("Authorization", "Bearer " + sharedSecret)
-                .GET()
-                .build();
-        return http.sendAsync(req, HttpResponse.BodyHandlers.ofString())
-                .thenApply(resp -> {
-                    if (resp.statusCode() != 200) return null;
-                    LinkResponse parsed = Json.GSON.fromJson(resp.body(), LinkResponse.class);
-                    return (parsed != null && parsed.linked()) ? parsed.student() : null;
                 })
                 .exceptionally(ex -> null);
     }

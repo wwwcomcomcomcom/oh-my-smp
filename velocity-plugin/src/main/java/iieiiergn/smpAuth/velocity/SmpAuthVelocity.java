@@ -1,10 +1,12 @@
 package iieiiergn.smpAuth.velocity;
 
 import com.google.inject.Inject;
+import com.velocitypowered.api.event.EventTask;
 import com.velocitypowered.api.event.Subscribe;
 import com.velocitypowered.api.event.connection.DisconnectEvent;
 import com.velocitypowered.api.event.connection.PluginMessageEvent;
 import com.velocitypowered.api.event.connection.PostLoginEvent;
+import com.velocitypowered.api.event.player.PlayerChooseInitialServerEvent;
 import com.velocitypowered.api.event.player.ServerPreConnectEvent;
 import com.velocitypowered.api.event.proxy.ProxyInitializeEvent;
 import com.velocitypowered.api.plugin.Plugin;
@@ -65,6 +67,28 @@ public final class SmpAuthVelocity {
                 state.put(player.getUniqueId(), student);
                 logger.info("Loaded link for {} ({})", player.getUsername(), student.name());
             }
+        });
+    }
+
+    /**
+     * Routes already-authenticated players straight to the content server on join, skipping the
+     * lobby (and its guide book) entirely. Runs async because it awaits the auth-server lookup:
+     * returning the {@link EventTask} makes Velocity hold the initial connection until the link is
+     * resolved, so — unlike a lobby-side plugin message right after spawn — the routing decision is
+     * made before the player connects anywhere. Unlinked players (or on lookup failure) fall through
+     * to the default initial server (the lobby).
+     */
+    @Subscribe
+    public EventTask onChooseInitialServer(PlayerChooseInitialServerEvent event) {
+        Player player = event.getPlayer();
+        return EventTask.async(() -> {
+            StudentData student = client.fetchLink(player.getUniqueId()).join();
+            if (student == null) return;
+            state.put(player.getUniqueId(), student);
+            proxy.getServer(config.contentServerName).ifPresentOrElse(
+                    event::setInitialServer,
+                    () -> logger.warn("contentServerName '{}' is not a registered server; leaving {} in the lobby",
+                            config.contentServerName, player.getUsername()));
         });
     }
 

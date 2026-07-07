@@ -1,7 +1,5 @@
 package iieiiergn.smpAuth.lobby;
 
-import iieiiergn.smpAuth.common.AuthMessage;
-import iieiiergn.smpAuth.common.Channels;
 import net.kyori.adventure.inventory.Book;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -39,7 +37,6 @@ public final class Main {
         instance.setGenerator(unit -> unit.modifier().fillHeight(0, 40, Block.GRASS_BLOCK));
 
         Book guideBook = GuideBook.build(config);
-        AuthClient authClient = new AuthClient(config.authServerBaseUrl, config.sharedSecret);
 
         GlobalEventHandler events = MinecraftServer.getGlobalEventHandler();
         events.addListener(AsyncPlayerConfigurationEvent.class, event -> {
@@ -48,36 +45,17 @@ public final class Main {
         });
         events.addListener(PlayerSpawnEvent.class, event -> {
             var player = event.getPlayer();
-            // Already-authenticated players skip the lobby entirely: check their link and, if
-            // present, bounce straight to the content server without showing the guide/login.
-            // fetchLink returns null on "not linked" or any error, so the fallback is the lobby flow.
-            authClient.fetchLink(player.getUuid()).thenAccept(student -> {
-                if (student != null) {
-                    player.sendMessage(Component.text(
-                            "인증된 사용자입니다. 서버로 이동합니다...", NamedTextColor.GREEN));
-                    player.sendMessage(Component.text(
-                            "이동되지 않으면 /server content 를 사용해주세요.", NamedTextColor.GRAY));
-                    // Reuse the /verify success path: Velocity reloads the link and auto-connects
-                    // the player to the content server (see SmpAuthVelocity#sendToContentServer).
-                    // Delay it a few ticks — sending it during spawn (before the player has fully
-                    // joined the lobby backend) makes Velocity's connection request fail silently.
-                    player.scheduler().buildTask(() -> player.sendPluginMessage(Channels.AUTH,
-                                    AuthMessage.linkUpdated(player.getUuid().toString()).encode()))
-                            .delay(TaskSchedule.tick(20))
-                            .schedule();
-                    return;
-                }
-                player.sendMessage(Component.text(
-                        "인증하려면 /login 을 입력하세요. 안내서는 /guide 로 다시 볼 수 있습니다.",
-                        NamedTextColor.YELLOW));
-                // The client ignores an OpenBookPacket sent while it's still on the join loading
-                // screen, so wait a few ticks until it has actually rendered the world.
-                player.scheduler().buildTask(() -> GuideCommand.show(player, guideBook))
-                        .delay(TaskSchedule.tick(20))
-                        .schedule();
-            });
+            player.sendMessage(Component.text(
+                    "인증하려면 /login 을 입력하세요. 안내서는 /guide 로 다시 볼 수 있습니다.",
+                    NamedTextColor.YELLOW));
+            // The client ignores an OpenBookPacket sent while it's still on the join loading
+            // screen, so wait a few ticks until it has actually rendered the world.
+            player.scheduler().buildTask(() -> GuideCommand.show(player, guideBook))
+                    .delay(TaskSchedule.tick(20))
+                    .schedule();
         });
 
+        AuthClient authClient = new AuthClient(config.authServerBaseUrl, config.sharedSecret);
         MinecraftServer.getCommandManager().register(new LoginCommand(config));
         MinecraftServer.getCommandManager().register(new VerifyCommand(authClient));
         MinecraftServer.getCommandManager().register(new GuideCommand(guideBook));
